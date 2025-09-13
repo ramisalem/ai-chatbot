@@ -12,7 +12,11 @@ export const entitlementsByUserType: Record<UserType, Entitlements> = {
    */
   guest: {
     maxMessagesPerDay: 20,
-    availableChatModelIds: ['chat-model', 'chat-model-reasoning'],
+    availableChatModelIds: [
+      'openai-gpt-4o-mini',
+      'google-gemini-1.5-flash',
+      'anthropic-claude-3.5-haiku',
+    ],
   },
 
   /*
@@ -20,7 +24,15 @@ export const entitlementsByUserType: Record<UserType, Entitlements> = {
    */
   regular: {
     maxMessagesPerDay: 100,
-    availableChatModelIds: ['chat-model', 'chat-model-reasoning'],
+    availableChatModelIds: [
+      'openai-gpt-4o',
+      'openai-gpt-4o-mini',
+      'openai-gpt-4',
+      'google-gemini-1.5-pro',
+      'google-gemini-1.5-flash',
+      'anthropic-claude-3.5-sonnet',
+      'anthropic-claude-3.5-haiku',
+    ],
   },
 
   /*
@@ -28,7 +40,17 @@ export const entitlementsByUserType: Record<UserType, Entitlements> = {
    */
   admin: {
     maxMessagesPerDay: 999999,
-    availableChatModelIds: ['chat-model', 'chat-model-reasoning'],
+    availableChatModelIds: [
+      'openai-gpt-4o',
+      'openai-gpt-4o-mini',
+      'openai-gpt-4',
+      'google-gemini-1.5-pro',
+      'google-gemini-1.5-flash',
+      'anthropic-claude-3.5-sonnet',
+      'anthropic-claude-3.5-haiku',
+      'xai-grok-vision',
+      'xai-grok-reasoning',
+    ],
   },
 
   /*
