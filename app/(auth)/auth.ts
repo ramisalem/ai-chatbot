@@ -6,7 +6,7 @@ import { authConfig } from './auth.config';
 import { DUMMY_PASSWORD } from '@/lib/constants';
 import type { DefaultJWT } from 'next-auth/jwt';
 
-export type UserType = 'guest' | 'regular';
+export type UserType = 'guest' | 'regular' | 'admin';
 
 declare module 'next-auth' {
   interface Session extends DefaultSession {
@@ -59,7 +59,10 @@ export const {
 
         if (!passwordsMatch) return null;
 
-        return { ...user, type: 'regular' };
+        // Check if this is an admin user (you can modify this logic as needed)
+        const isAdmin = user.email?.includes('admin') || user.email === 'admin@example.com';
+        
+        return { ...user, type: isAdmin ? 'admin' : 'regular' };
       },
     }),
     Credentials({
