@@ -22,6 +22,16 @@ import { useAutoResume } from '@/hooks/use-auto-resume';
 import { ChatSDKError } from '@/lib/errors';
 import type { Attachment, ChatMessage } from '@/lib/types';
 import { useDataStream } from './data-stream-provider';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 export function Chat({
   id,
@@ -31,6 +41,7 @@ export function Chat({
   isReadonly,
   session,
   autoResume,
+  initialLastContext,
 }: {
   id: string;
   initialMessages: ChatMessage[];
@@ -39,6 +50,7 @@ export function Chat({
   isReadonly: boolean;
   session: Session;
   autoResume: boolean;
+  initialLastContext?: LanguageModelUsage;
 }) {
   const { visibilityType } = useChatVisibility({
     chatId: id,
@@ -49,7 +61,10 @@ export function Chat({
   const { setDataStream } = useDataStream();
 
   const [input, setInput] = useState<string>('');
-  const [usage, setUsage] = useState<LanguageModelUsage | undefined>(undefined);
+  const [usage, setUsage] = useState<LanguageModelUsage | undefined>(
+    initialLastContext,
+  );
+  const [showCreditCardAlert, setShowCreditCardAlert] = useState(false);
 
   const {
     messages,
@@ -90,10 +105,17 @@ export function Chat({
     },
     onError: (error) => {
       if (error instanceof ChatSDKError) {
-        toast({
-          type: 'error',
-          description: error.message,
-        });
+        // Check if it's a credit card error
+        if (
+          error.message?.includes('AI Gateway requires a valid credit card')
+        ) {
+          setShowCreditCardAlert(true);
+        } else {
+          toast({
+            type: 'error',
+            description: error.message,
+          });
+        }
       }
     },
   });
@@ -132,7 +154,7 @@ export function Chat({
 
   return (
     <>
-      <div className="flex flex-col min-w-0 h-dvh bg-background touch-pan-y overscroll-behavior-contain">
+      <div className="overscroll-behavior-contain flex h-dvh min-w-0 touch-pan-y flex-col bg-background">
         <ChatHeader
           chatId={id}
           selectedVisibilityType={initialVisibilityType}
@@ -152,7 +174,7 @@ export function Chat({
           selectedModelId={initialChatModel}
         />
 
-        <div className="sticky bottom-0 flex gap-2 px-2 md:px-4 pb-3 md:pb-4 mx-auto w-full bg-background max-w-4xl z-[1] border-t-0">
+        <div className="sticky bottom-0 z-1 mx-auto flex w-full max-w-4xl gap-2 border-t-0 bg-background px-2 pb-3 md:px-4 md:pb-4">
           {!isReadonly && (
             <MultimodalInput
               chatId={id}
@@ -190,6 +212,36 @@ export function Chat({
         selectedVisibilityType={visibilityType}
         selectedModelId={initialChatModel}
       />
+
+      <AlertDialog
+        open={showCreditCardAlert}
+        onOpenChange={setShowCreditCardAlert}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Activate AI Gateway</AlertDialogTitle>
+            <AlertDialogDescription>
+              This application requires{' '}
+              {process.env.NODE_ENV === 'production' ? 'the owner' : 'you'} to
+              activate Vercel AI Gateway.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                window.open(
+                  'https://vercel.com/d?to=%2F%5Bteam%5D%2F%7E%2Fai%3Fmodal%3Dadd-credit-card',
+                  '_blank',
+                );
+                window.location.href = '/';
+              }}
+            >
+              Activate
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

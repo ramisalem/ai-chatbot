@@ -53,6 +53,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
           isReadonly={session?.user?.id !== chat.userId}
           session={session}
           autoResume={true}
+          initialLastContext={chat.lastContext ?? undefined}
         />
         <DataStreamHandler />
       </>
@@ -69,6 +70,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
         isReadonly={session?.user?.id !== chat.userId}
         session={session}
         autoResume={true}
+        initialLastContext={chat.lastContext ?? undefined}
       />
       <DataStreamHandler />
     </>
