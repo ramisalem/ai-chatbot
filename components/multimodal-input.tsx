@@ -15,7 +15,7 @@ import {
 import { toast } from 'sonner';
 import { useLocalStorage, useWindowSize } from 'usehooks-ts';
 
-import { ArrowUpIcon, PaperclipIcon, StopIcon } from './icons';
+import { ArrowUpIcon, PaperclipIcon, CpuIcon, StopIcon, ChevronDownIcon } from './icons';
 import { PreviewAttachment } from './preview-attachment';
 import { Button } from './ui/button';
 import { SuggestedActions } from './suggested-actions';
@@ -26,10 +26,10 @@ import {
   PromptInputTools,
   PromptInputSubmit,
   PromptInputModelSelect,
-  PromptInputModelSelectTrigger,
   PromptInputModelSelectContent,
 } from './elements/prompt-input';
-import { SelectItem, SelectValue } from '@/components/ui/select';
+import { SelectItem } from '@/components/ui/select';
+import * as SelectPrimitive from '@radix-ui/react-select';
 import equal from 'fast-deep-equal';
 import type { UseChatHelpers } from '@ai-sdk/react';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -214,7 +214,6 @@ function PureMultimodalInput({
       usedTokens,
       usage,
       modelId: modelResolver.modelId,
-      showBreakdown: true as const,
     }),
     [contextMax, usedTokens, usage, modelResolver],
   );
@@ -254,7 +253,7 @@ function PureMultimodalInput({
   }, [status, scrollToBottom]);
 
   return (
-    <div className="flex relative flex-col gap-4 w-full">
+    <div className='flex relative flex-col gap-4 w-full'>
       <AnimatePresence>
         {!isAtBottom && (
           <motion.div
@@ -262,7 +261,7 @@ function PureMultimodalInput({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-            className="absolute -top-12 left-1/2 z-50 -translate-x-1/2"
+            className='absolute -top-12 left-1/2 z-50 -translate-x-1/2'
           >
             <Button
               data-testid="scroll-to-bottom-button"
@@ -292,7 +291,7 @@ function PureMultimodalInput({
 
       <input
         type="file"
-        className="fixed -top-4 -left-4 size-0.5 opacity-0 pointer-events-none"
+        className="-top-4 -left-4 pointer-events-none fixed size-0.5 opacity-0"
         ref={fileInputRef}
         multiple
         onChange={handleFileChange}
@@ -300,7 +299,7 @@ function PureMultimodalInput({
       />
 
       <PromptInput
-        className="rounded-xl border shadow-sm transition-all duration-200 bg-background border-border focus-within:border-border hover:border-muted-foreground/50"
+        className='p-3 rounded-xl border transition-all duration-200 border-border bg-background shadow-xs focus-within:border-border hover:border-muted-foreground/50'
         onSubmit={(event) => {
           event.preventDefault();
           if (status !== 'ready') {
@@ -313,7 +312,7 @@ function PureMultimodalInput({
         {(attachments.length > 0 || uploadQueue.length > 0) && (
           <div
             data-testid="attachments-preview"
-            className="flex overflow-x-scroll flex-row gap-2 items-end px-3 py-2"
+            className='flex overflow-x-scroll flex-row gap-2 items-end'
           >
             {attachments.map((attachment) => (
               <PreviewAttachment
@@ -343,39 +342,41 @@ function PureMultimodalInput({
             ))}
           </div>
         )}
-
-        <PromptInputTextarea
-          data-testid="multimodal-input"
-          ref={textareaRef}
-          placeholder="Send a message..."
-          value={input}
-          onChange={handleInput}
-          minHeight={44}
-          maxHeight={200}
-          disableAutoResize={true}
-          className="text-sm resize-none py-3 px-3 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] bg-transparent !border-0 !border-none outline-none ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none placeholder:text-muted-foreground"
-          rows={1}
-          autoFocus
-        />
-        <PromptInputToolbar className="px-3 py-2 !border-t-0 !border-top-0 shadow-none dark:!border-transparent dark:border-0">
-          <PromptInputTools className="gap-2">
+        <div className='flex flex-row gap-1 items-start sm:gap-2'>
+          <PromptInputTextarea
+            data-testid="multimodal-input"
+            ref={textareaRef}
+            placeholder="Send a message..."
+            value={input}
+            onChange={handleInput}
+            minHeight={44}
+            maxHeight={200}
+            disableAutoResize={true}
+            className='grow resize-none border-0! p-2 border-none! bg-transparent text-sm outline-none ring-0 [-ms-overflow-style:none] [scrollbar-width:none] placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 [&::-webkit-scrollbar]:hidden'
+            rows={1}
+            autoFocus
+          />{' '}
+          <Context {...contextProps} />
+        </div>
+        <PromptInputToolbar className='!border-top-0 border-t-0! p-0 shadow-none dark:border-0 dark:border-transparent!'>
+          <PromptInputTools className="gap-0 sm:gap-0.5">
             <AttachmentsButton
               fileInputRef={fileInputRef}
               status={status}
               selectedModelId={selectedModelId}
             />
             <ModelSelectorCompact selectedModelId={selectedModelId} />
-            <Context {...contextProps} />
           </PromptInputTools>
+
           {status === 'submitted' ? (
             <StopButton stop={stop} setMessages={setMessages} />
           ) : (
             <PromptInputSubmit
               status={status}
               disabled={!input.trim() || uploadQueue.length > 0}
-              className="p-2 rounded-full transition-colors duration-200 text-primary-foreground bg-primary hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground"
+              className="rounded-full transition-colors duration-200 size-8 bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground"
             >
-              <ArrowUpIcon size={16} />
+              <ArrowUpIcon size={14} />
             </PromptInputSubmit>
           )}
         </PromptInputToolbar>
@@ -412,16 +413,15 @@ function PureAttachmentsButton({
   return (
     <Button
       data-testid="attachments-button"
-      className="rounded-md p-1.5 h-fit hover:bg-muted transition-colors duration-200"
+      className='p-1 h-8 rounded-lg transition-colors aspect-square hover:bg-accent'
       onClick={(event) => {
         event.preventDefault();
         fileInputRef.current?.click();
       }}
       disabled={status !== 'ready' || isReasoningModel}
       variant="ghost"
-      size="sm"
     >
-      <PaperclipIcon size={14} />
+      <PaperclipIcon size={14} style={{ width: 14, height: 14 }} />
     </Button>
   );
 }
@@ -452,23 +452,29 @@ function PureModelSelectorCompact({
         }
       }}
     >
-      <PromptInputModelSelectTrigger
+      <SelectPrimitive.Trigger
         type="button"
-        className="text-xs focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=open]:ring-0 data-[state=closed]:ring-0"
+        className='flex gap-2 items-center px-2 h-8 rounded-lg border-0 shadow-none transition-colors bg-background text-foreground hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0'
       >
-        {selectedModel?.name || 'Select model'}
-      </PromptInputModelSelectTrigger>
-      <PromptInputModelSelectContent>
+        <CpuIcon size={16} />
+        <span className="hidden text-xs font-medium sm:block">{selectedModel?.name}</span>
+        <ChevronDownIcon size={16} />
+      </SelectPrimitive.Trigger>
+      <PromptInputModelSelectContent className="min-w-[260px] p-0">
+        <div className="flex flex-col gap-px">
         {chatModels.map((model) => (
-          <SelectItem key={model.id} value={model.name}>
-            <div className="flex flex-col gap-1 items-start py-1">
-              <div className="font-medium">{model.name}</div>
-              <div className="text-xs text-muted-foreground">
+          <SelectItem key={model.id} value={model.name} className="px-3 py-2 text-xs">
+            <div className="flex flex-col flex-1 gap-1 min-w-0">
+              <div className="text-xs font-medium truncate">
+                {model.name}
+              </div>
+              <div className="text-[10px] text-muted-foreground truncate leading-tight">
                 {model.description}
               </div>
             </div>
           </SelectItem>
         ))}
+        </div>
       </PromptInputModelSelectContent>
     </PromptInputModelSelect>
   );
@@ -486,16 +492,14 @@ function PureStopButton({
   return (
     <Button
       data-testid="stop-button"
-      className="p-2 rounded-full border transition-colors duration-200 h-fit border-border hover:bg-muted"
+      className="p-1 rounded-full transition-colors duration-200 size-7 bg-foreground text-background hover:bg-foreground/90 disabled:bg-muted disabled:text-muted-foreground"
       onClick={(event) => {
         event.preventDefault();
         stop();
         setMessages((messages) => messages);
       }}
-      variant="outline"
-      size="sm"
     >
-      <StopIcon size={16} />
+      <StopIcon size={14} />
     </Button>
   );
 }

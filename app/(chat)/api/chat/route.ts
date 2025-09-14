@@ -2,7 +2,7 @@ import {
   convertToModelMessages,
   createUIMessageStream,
   JsonToSseTransformStream,
-  LanguageModelUsage,
+  type LanguageModelUsage,
   smoothStream,
   stepCountIs,
   streamText,
@@ -18,6 +18,7 @@ import {
   saveChat,
   saveMessages,
 } from '@/lib/db/queries';
+import { updateChatLastContextById } from '@/lib/db/queries';
 import { convertToUIMessages, generateUUID } from '@/lib/utils';
 import { generateTitleFromUserMessage } from '../../actions';
 import { createDocument } from '@/lib/ai/tools/create-document';
@@ -210,6 +211,17 @@ export async function POST(request: Request) {
             chatId: id,
           })),
         });
+
+        if (finalUsage) {
+          try {
+            await updateChatLastContextById({
+              chatId: id,
+              context: finalUsage,
+            });
+          } catch (err) {
+            console.warn('Unable to persist last usage for chat', id, err);
+          }
+        }
       },
       onError: () => {
         return 'Oops, an error occurred!';
@@ -230,6 +242,16 @@ export async function POST(request: Request) {
   } catch (error) {
     if (error instanceof ChatSDKError) {
       return error.toResponse();
+    }
+
+    // Check for Vercel AI Gateway credit card error
+    if (
+      error instanceof Error &&
+      error.message?.includes(
+        'AI Gateway requires a valid credit card on file to service requests',
+      )
+    ) {
+      return new ChatSDKError('bad_request:activate_gateway').toResponse();
     }
 
     console.error('Unhandled error in chat API:', error);
@@ -253,7 +275,7 @@ export async function DELETE(request: Request) {
 
   const chat = await getChatById({ id });
 
-  if (chat.userId !== session.user.id) {
+  if (chat?.userId !== session.user.id) {
     return new ChatSDKError('forbidden:chat').toResponse();
   }
 
