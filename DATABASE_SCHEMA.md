@@ -1,254 +1,164 @@
-****# Database Schema Documentation
+# Database Schema Documentation
 
-This document describes the PostgreSQL database structure for the real estate management system. This schema is designed for a Django-based application that manages properties, customers, units, and various related entities.
+This document describes the PostgreSQL database structure for the AI chatbot application built with Next.js 15, Drizzle ORM, and Vercel AI SDK.
 
-## Connection Details
-- **Database**: PostgreSQL
-- **Host**: 159.69.110.71:5433
-- **Database Name**: postgres
-- **Connection String**: `postgres://postgres:e0KxH9yGFSHh0kx55z4VWa2sgxXy6PBm0PkWJOuclW7fbjxZwIJa54puRnWlWwA3@159.69.110.71:5433/postgres`
+## Technology Stack
+- **Database**: PostgreSQL (Vercel Postgres)
+- **ORM**: Drizzle ORM with PostgreSQL adapter
+- **Schema Location**: `lib/db/schema.ts`
+- **Migration Commands**: See `CLAUDE.md` for database operations
 
-## Core Entity Tables
+## Core Tables
 
-### 1. Users and Authentication
+### 1. User Authentication
 
-#### `user_user` - Main User Table
-- **Primary Key**: `id` (UUID)
+#### `User` Table
+- **Primary Key**: `id` (UUID, auto-generated)
 - **Columns**:
-  - `id`: UUID - Primary key
-  - `username`: varchar(150) - Unique username
-  - `email`: varchar(254) - Email address (optional)
-  - `name`: varchar(255) - User's full name
-  - `phone_number`: varchar(128) - Phone number (unique per role)
-  - `password`: varchar(128) - Hashed password
-  - `role`: varchar(100) - User role in system
-  - `is_superuser`, `is_staff`, `is_active`: boolean - Permission flags
-  - `is_deleted`: boolean - Soft deletion flag
-  - `deleted_at`: timestamp - Deletion timestamp
-  - `last_login`: timestamp - Last login time
-  - `created_at`, `updated_at`: timestamp - Audit fields
-  - `created_by_id`, `updated_by_id`: UUID - Audit user references
-- **Unique Constraints**: 
-  - `username` (unique)
-  - `(phone_number, role)` (unique combination)
+  - `id`: UUID - Primary key, automatically generated
+  - `email`: VARCHAR(64) - User email address (required, unique)
+  - `password`: VARCHAR(64) - Hashed password (nullable for OAuth users)
 
-#### `user_profile` - User Profile Extension
-- **Primary Key**: `id`
-- **Foreign Keys**: `user_id` → `user_user.id` (one-to-one)
+### 2. Chat Management
 
-### 2. Customers
-
-#### `customer_customer` - Customer Information
-- **Primary Key**: `id` (UUID)
+#### `Chat` Table
+- **Primary Key**: `id` (UUID, auto-generated)
 - **Columns**:
-  - `id`: UUID - Primary key
-  - `user_id`: UUID - Reference to user_user (unique)
-  - `expected_budget`: double precision - Customer's budget expectation
-  - `city_id`: UUID - Reference to city_city
-  - `created_at`, `updated_at`: timestamp
-  - `created_by_id`, `updated_by_id`: UUID - Audit fields
+  - `id`: UUID - Primary key, automatically generated
+  - `createdAt`: TIMESTAMP - When chat was created (required)
+  - `title`: TEXT - Chat title/subject (required)
+  - `userId`: UUID - Foreign key to User table (required)
+  - `visibility`: VARCHAR - Enum: 'public' or 'private' (default: 'private')
+  - `lastContext`: JSONB - Stores LanguageModelV2Usage data for context tracking (nullable)
 - **Foreign Keys**:
-  - `user_id` → `user_user.id` (unique relationship)
-  - `city_id` → `city_city.id`
-  - `created_by_id`, `updated_by_id` → `user_user.id`
+  - `userId` → `User.id`
 
-#### `customer_customer_interests` - Customer Interest Categories
-- **Purpose**: Many-to-many relationship between customers and their interests
-- **Columns**: `customer_id`, `interest_id`
+### 3. Messages (Current Schema)
 
-### 3. Properties and Units
-
-#### `unit_unit` - Property Units
-- **Primary Key**: `id` (UUID)
+#### `Message_v2` Table
+- **Primary Key**: `id` (UUID, auto-generated)
 - **Columns**:
-  - `id`: UUID - Primary key
-  - `name`, `name_en`, `name_ar`: varchar(255) - Unit names (multilingual)
-  - `status`: varchar(100) - Unit status (available, sold, reserved, etc.)
-  - `price`: double precision - Unit price
-  - `meter_price`: double precision - Price per square meter
-  - `floor`: varchar(100) - Floor location
-  - `area`: double precision - Unit area in square meters
-  - `rooms`: integer - Number of rooms
-  - `toilets`: integer - Number of bathrooms/toilets
-  - `has_private_sitting_room`: boolean - Has private living room
-  - `has_basement_parking`: boolean - Has basement parking
-  - `sort_order`: integer - Display order (≥ 0)
-  - `note`: text - Additional notes
-  - `project_id`: UUID - Project reference (no FK constraint in schema)
-  - `created_at`, `updated_at`: timestamp
-  - `created_by_id`, `updated_by_id`: UUID - Audit fields
+  - `id`: UUID - Primary key, automatically generated
+  - `chatId`: UUID - Foreign key to Chat table (required)
+  - `role`: VARCHAR - Message role (user, assistant, system, etc.)
+  - `parts`: JSON - Message content parts (array of message components)
+  - `attachments`: JSON - File attachments and media (array)
+  - `createdAt`: TIMESTAMP - When message was created (required)
 - **Foreign Keys**:
-  - `created_by_id`, `updated_by_id` → `user_user.id`
-- **Indexes**: `status`, `sort_order`, `project_id`
+  - `chatId` → `Chat.id`
 
-#### `unit_unitimage` - Unit Images
-- **Purpose**: Images associated with units
-- **Foreign Keys**: `unit_id` → `unit_unit.id`
+### 4. Voting System (Current Schema)
 
-#### `unit_unit_tags` - Unit Tags
-- **Purpose**: Many-to-many relationship between units and tags
-- **Foreign Keys**: `unit_id` → `unit_unit.id`, `tag_id` → `tag_tag.id`
-
-### 4. Location Management
-
-#### `city_city` - Cities
-- **Primary Key**: `id` (UUID)
+#### `Vote_v2` Table
+- **Composite Primary Key**: (`chatId`, `messageId`)
 - **Columns**:
-  - `id`: UUID - Primary key
-  - `name`, `name_en`, `name_ar`: varchar(255) - City names (multilingual)
-  - `country`: varchar(2) - Country code
-  - `is_active`: boolean - Active status
-  - `enabled_at`: timestamp - When enabled
-  - `sort_order`: integer - Display order (≥ 0)
-  - `created_at`, `updated_at`: timestamp
-  - `created_by_id`, `updated_by_id`: UUID - Audit fields
-
-#### `neighborhood_neighborhood` - Neighborhoods
-- **Foreign Keys**: `city_id` → `city_city.id`
-
-#### `street_street` - Streets
-- **Purpose**: Street information within neighborhoods
-
-### 5. Teams and Members
-
-#### `member_member` - Sales/Support Members
-- **Primary Key**: `id` (UUID)
-- **Foreign Keys**: 
-  - `user_id` → `user_user.id`
-  - Team relationships through many-to-many tables
-
-#### `team_team` - Sales/Support Teams
-- **Primary Key**: `id` (UUID)
-- **Purpose**: Organize members into teams
-
-#### `team_team_members` - Team Membership
-- **Purpose**: Many-to-many relationship between teams and members
-
-### 6. Customer Interactions
-
-#### `engagement_engagement` - Customer Engagements
-- **Primary Key**: `id` (UUID)
-- **Columns**:
-  - `id`: UUID - Primary key
-  - `status`: varchar(100) - Engagement status
-  - `visit_date`: timestamp - Scheduled/completed visit date
-  - `note`: text - Engagement notes
-  - `customer_id`: UUID - Customer reference
-  - `member_id`: UUID - Assigned member
-  - `project_id`: UUID - Project reference
-  - `team_id`: UUID - Assigned team
-  - `unit_id`: UUID - Specific unit (optional)
-  - `created_at`, `updated_at`: timestamp
-  - `created_by_id`, `updated_by_id`: UUID - Audit fields
+  - `chatId`: UUID - Foreign key to Chat table (required)
+  - `messageId`: UUID - Foreign key to Message_v2 table (required)
+  - `isUpvoted`: BOOLEAN - True for upvote, false for downvote (required)
 - **Foreign Keys**:
-  - `customer_id` → `customer_customer.id`
-  - `member_id` → `member_member.id`
-  - `team_id` → `team_team.id`
-  - `unit_id` → `unit_unit.id` (nullable)
-  - `created_by_id`, `updated_by_id` → `user_user.id`
+  - `chatId` → `Chat.id`
+  - `messageId` → `Message_v2.id`
 
-### 7. Shopping and Commerce
+### 5. Document Management
 
-#### `cart_cart` - Shopping Carts
-- **Primary Key**: `id` (UUID)
-- **Foreign Keys**: `customer_id` → `customer_customer.id`
+#### `Document` Table
+- **Composite Primary Key**: (`id`, `createdAt`)
+- **Columns**:
+  - `id`: UUID - Document identifier, auto-generated
+  - `createdAt`: TIMESTAMP - When document was created (required)
+  - `title`: TEXT - Document title (required)
+  - `content`: TEXT - Document content (nullable)
+  - `kind`: VARCHAR - Document type enum: 'text', 'code', 'image', 'sheet' (default: 'text')
+  - `userId`: UUID - Foreign key to User table (required)
+- **Foreign Keys**:
+  - `userId` → `User.id`
 
-#### `cart_cart_units` - Cart Contents
-- **Purpose**: Many-to-many relationship between carts and units
-- **Foreign Keys**: 
-  - `cart_id` → `cart_cart.id`
-  - `unit_id` → `unit_unit.id`
+### 6. AI Suggestions
 
-#### `favorite_favorite` - User Favorites
-- **Purpose**: Track user's favorite units/properties
-- **Foreign Keys**: `user_id` → `user_user.id`
+#### `Suggestion` Table
+- **Primary Key**: `id` (UUID, auto-generated)
+- **Columns**:
+  - `id`: UUID - Primary key, automatically generated
+  - `documentId`: UUID - Reference to document (required)
+  - `documentCreatedAt`: TIMESTAMP - Document creation timestamp (required)
+  - `originalText`: TEXT - Original text being suggested for change (required)
+  - `suggestedText`: TEXT - AI-suggested replacement text (required)
+  - `description`: TEXT - Description of the suggestion (nullable)
+  - `isResolved`: BOOLEAN - Whether suggestion has been resolved (default: false)
+  - `userId`: UUID - Foreign key to User table (required)
+  - `createdAt`: TIMESTAMP - When suggestion was created (required)
+- **Foreign Keys**:
+  - `userId` → `User.id`
+  - `(documentId, documentCreatedAt)` → `Document.(id, createdAt)` (composite)
 
-### 8. Project Features and Attributes
+### 7. Streaming Management
 
-#### `facility_facility` - Available Facilities
-- **Primary Key**: `id` (UUID)
-- **Purpose**: Define facilities (gym, pool, parking, etc.)
+#### `Stream` Table
+- **Primary Key**: `id` (UUID, auto-generated)
+- **Columns**:
+  - `id`: UUID - Primary key, automatically generated
+  - `chatId`: UUID - Foreign key to Chat table (required)
+  - `createdAt`: TIMESTAMP - When stream was created (required)
+- **Foreign Keys**:
+  - `chatId` → `Chat.id`
 
-#### `feature_feature` - Property Features
-- **Primary Key**: `id` (UUID)
-- **Purpose**: Define features (balcony, garden, etc.)
+## Deprecated Tables (Legacy Schema)
 
-#### `service_service` - Services
-- **Primary Key**: `id` (UUID)
-- **Purpose**: Define services offered
+These tables are marked as deprecated and will be removed in future versions:
 
-#### `guarantee_guarantee` - Guarantees
-- **Primary Key**: `id` (UUID)
-- **Purpose**: Define warranty/guarantee types
+### `Message` Table (DEPRECATED)
+- **Migration Note**: Being replaced by `Message_v2` - see migration guide at chat-sdk.dev
+- Similar structure to `Message_v2` but with different `content` field structure
 
-#### Project Association Tables:
-- `project_project_facilities` - Links projects to facilities
-- `project_project_features` - Links projects to features
-- `project_project_services` - Links projects to services
-- `project_project_guarantees` - Links projects to guarantees
-- `project_project_tags` - Links projects to tags
-- `project_project_teams` - Links projects to teams
-- `project_project_types` - Links projects to types
+### `Vote` Table (DEPRECATED)
+- **Migration Note**: Being replaced by `Vote_v2`
+- References deprecated `Message` table instead of `Message_v2`
 
-### 9. Content Management
+## Key Relationships
 
-#### `banner_banner` - Marketing Banners
-- **Primary Key**: `id` (UUID)
-- **Purpose**: Promotional banners with project associations
+1. **User → Chat**: One-to-many (users can have multiple chats)
+2. **Chat → Message**: One-to-many (chats contain multiple messages)
+3. **Chat → Vote**: One-to-many (chats can have multiple votes)
+4. **Message → Vote**: One-to-many (messages can be voted on)
+5. **User → Document**: One-to-many (users can create multiple documents)
+6. **Document → Suggestion**: One-to-many (documents can have multiple AI suggestions)
+7. **User → Suggestion**: One-to-many (users can receive multiple suggestions)
+8. **Chat → Stream**: One-to-many (chats can have multiple streams)
 
-#### `banner_banner_projects` - Banner-Project Associations
-- **Purpose**: Many-to-many between banners and projects
+## Database Operations
 
-#### `faq_faq` - Frequently Asked Questions
-- **Primary Key**: `id` (UUID)
+### Migration Commands (from CLAUDE.md)
+- `pnpm db:generate` - Generate Drizzle migrations
+- `pnpm db:migrate` - Run migrations
+- `pnpm db:studio` - Open Drizzle Studio
+- `pnpm db:push` - Push schema changes
+- `pnpm db:pull` - Pull schema from database
+- `pnpm db:check` - Check migration status
 
-#### `notification_notification` - User Notifications
-- **Primary Key**: `id` (UUID)
-- **Foreign Keys**: 
-  - `recipient_id` → `user_user.id`
-  - `created_by_id`, `updated_by_id` → `user_user.id`
+### Environment Variables
+- `POSTGRES_URL` - Database connection URL
+- See `.env.example` for complete environment setup
 
-### 10. System and Configuration
+## AI Integration Notes
 
-#### `configuration_appconfig` - Application Configuration
-- **Purpose**: Store system-wide configuration settings
+1. **Message Structure**: Messages use a `parts` array format compatible with Vercel AI SDK v5
+2. **Context Tracking**: `Chat.lastContext` stores AI usage metrics for billing/monitoring
+3. **Streaming**: `Stream` table manages real-time message streaming
+4. **Suggestions**: AI-powered text suggestions are tracked and can be resolved
+5. **Document Types**: Support for multiple document types (text, code, image, sheet)
 
-#### `task_task` - System Tasks
-- **Primary Key**: `id` (UUID)
-- **Purpose**: Task management system
+## Query Patterns
 
-#### `task_task_members` - Task Assignments
-- **Purpose**: Many-to-many relationship between tasks and members
+Common query patterns for this schema:
 
-#### `history_history` - Audit History
-- **Purpose**: Track changes and user activities
-- **Foreign Keys**: `user_id` → `user_user.id`
+1. **Get user's chats**: Join `Chat` with `User` on `userId`
+2. **Get chat messages**: Join `Message_v2` with `Chat` on `chatId`, order by `createdAt`
+3. **Get message votes**: Join `Vote_v2` with `Message_v2` and `Chat`
+4. **Get user documents**: Filter `Document` by `userId`
+5. **Get pending suggestions**: Filter `Suggestion` by `isResolved = false`
 
-## Key Relationships Summary
+## TypeScript Types
 
-1. **User → Customer**: One-to-one relationship (`customer_customer.user_id`)
-2. **Customer → City**: Many-to-one (`customer_customer.city_id`)
-3. **Unit → Project**: Many-to-one (`unit_unit.project_id`) - Note: No FK constraint
-4. **Engagement**: Central entity linking Customer, Member, Team, Project, and optionally Unit
-5. **Cart**: Links customers to units they're interested in purchasing
-6. **Project Associations**: Projects linked to facilities, features, services, guarantees, teams, and types through junction tables
-
-## Query Patterns for AI
-
-When querying this database:
-
-1. **Find customer information**: Join `customer_customer` with `user_user` on `user_id`
-2. **Get available units**: Filter `unit_unit` by `status` field
-3. **Customer engagement tracking**: Use `engagement_engagement` as the central table
-4. **Location-based queries**: Join through `city_city` → `customer_customer` → related entities
-5. **Project details**: Units belong to projects via `project_id`, with features accessible through `project_project_*` junction tables
-6. **Team assignments**: Track through `engagement_engagement` which connects customers to members and teams
-
-## Important Notes
-
-- All tables use UUID primary keys
-- Most entities have audit fields (`created_at`, `updated_at`, `created_by_id`, `updated_by_id`)
-- Many tables support soft deletion (`is_deleted`, `deleted_at`)
-- Multilingual support with `_en` and `_ar` suffixes for English and Arabic
-- The system appears to be a Django application based on naming conventions
-- Some foreign key relationships exist in the application logic but not as database constraints
+All tables have corresponding TypeScript types generated by Drizzle:
+- `User`, `Chat`, `DBMessage`, `Vote`, `Document`, `Suggestion`, `Stream`
+- Deprecated types: `MessageDeprecated`, `VoteDeprecated`
