@@ -2,6 +2,7 @@ import { Toaster } from 'sonner';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
+import { LanguageProvider } from '@/lib/lang';
 
 import './globals.css';
 import { SessionProvider } from 'next-auth/react';
@@ -48,6 +49,22 @@ const THEME_COLOR_SCRIPT = `\
   updateThemeColor();
 })();`;
 
+const LANGUAGE_SCRIPT = `\
+(function() {
+  try {
+    var html = document.documentElement;
+    var stored = localStorage.getItem('app:language');
+    var lang = stored === 'ar' ? 'ar' : 'en';
+    // If nothing stored, try browser setting
+    if (!stored) {
+      var nav = (navigator.language || 'en').toLowerCase();
+      if (nav.indexOf('ar') === 0) lang = 'ar';
+    }
+    html.setAttribute('lang', lang);
+    html.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+  } catch (e) {}
+})();`;
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -69,6 +86,11 @@ export default async function RootLayout({
             __html: THEME_COLOR_SCRIPT,
           }}
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: LANGUAGE_SCRIPT,
+          }}
+        />
       </head>
       <body className="antialiased">
         <ThemeProvider
@@ -77,8 +99,10 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Toaster position="top-center" />
-          <SessionProvider>{children}</SessionProvider>
+          <LanguageProvider>
+            <Toaster position="top-center" />
+            <SessionProvider>{children}</SessionProvider>
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

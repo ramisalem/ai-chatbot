@@ -11,6 +11,7 @@ import { useSidebar } from './ui/sidebar';
 import { memo } from 'react';
 import { type VisibilityType, VisibilitySelector } from './visibility-selector';
 import type { Session } from 'next-auth';
+import { useLanguage } from '@/lib/lang';
 
 function PureChatHeader({
   chatId,
@@ -27,6 +28,7 @@ function PureChatHeader({
   const { open } = useSidebar();
 
   const { width: windowWidth } = useWindowSize();
+  const { language, toggleLanguage } = useLanguage();
 
   return (
     <header className="sticky top-0 flex items-center gap-2 bg-background px-2 py-1.5 md:px-2">
@@ -66,6 +68,14 @@ function PureChatHeader({
           <VercelIcon size={16} />
           Deploy with Vercel
         </Link>
+      </Button>
+
+      <Button
+        variant="outline"
+        className="order-4 ml-2 h-8 px-2"
+        onClick={toggleLanguage}
+      >
+        {language === 'ar' ? 'English' : 'العربية'}
       </Button>
     </header>
   );
