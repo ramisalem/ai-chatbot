@@ -5,7 +5,8 @@
       "Bash(lsof:*)",
       "Bash(pnpm db:migrate:*)",
       "Bash(gh auth:*)",
-      "Bash(gh extension install:*)"
+      "Bash(gh extension install:*)",
+      "Bash(mv:*)"
     ],
     "deny": [],
     "ask": []
