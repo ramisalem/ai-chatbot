@@ -1,4 +1,4 @@
-export const DEFAULT_CHAT_MODEL: string = 'chat-model';
+export const DEFAULT_CHAT_MODEL: string = 'openai-gpt-4o-mini';
 
 export interface ChatModel {
   id: string;
@@ -17,5 +17,25 @@ export const chatModels: Array<ChatModel> = [
     name: 'Grok Reasoning',
     description:
       'Uses advanced chain-of-thought reasoning for complex problems',
+  },
+  {
+    id: 'openai-gpt-4o',
+    name: 'GPT-4o',
+    description: 'Most capable GPT model with multimodal capabilities',
+  },
+  {
+    id: 'openai-gpt-4o-mini',
+    name: 'GPT-4o Mini',
+    description: 'Faster and more affordable GPT-4 model',
+  },
+  {
+    id: 'google-gemini-1.5-pro',
+    name: 'Gemini 1.5 Pro',
+    description: 'Google\'s most capable model with 2M token context',
+  },
+  {
+    id: 'google-gemini-1.5-flash',
+    name: 'Gemini 1.5 Flash',
+    description: 'Fast and efficient model for everyday tasks',
   },
 ];

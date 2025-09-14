@@ -34,13 +34,13 @@ const getLLMProvider = () => {
       };
     default: // openai
       return {
-        'chat-model': openai('gpt-4o'),
+        'chat-model': openai('gpt-4o-mini'),
         'chat-model-reasoning': wrapLanguageModel({
-          model: openai('gpt-4o'),
+          model: openai('gpt-4o-mini'),
           middleware: extractReasoningMiddleware({ tagName: 'think' }),
         }),
         'title-model': openai('gpt-4o-mini'),
-        'artifact-model': openai('gpt-4o'),
+        'artifact-model': openai('gpt-4o-mini'),
       };
   }
 };
@@ -59,9 +59,19 @@ export const myProvider = isTestEnvironment
           'chat-model-reasoning': reasoningModel,
           'title-model': titleModel,
           'artifact-model': artifactModel,
+          'openai-gpt-4o': openai('gpt-4o'),
+          'openai-gpt-4o-mini': openai('gpt-4o-mini'),
+          'google-gemini-1.5-pro': google('gemini-1.5-pro-002'),
+          'google-gemini-1.5-flash': google('gemini-1.5-flash-002'),
         },
       });
     })()
   : customProvider({
-      languageModels: getLLMProvider(),
+      languageModels: {
+        ...getLLMProvider(),
+        'openai-gpt-4o': openai('gpt-4o'),
+        'openai-gpt-4o-mini': openai('gpt-4o-mini'),
+        'google-gemini-1.5-pro': google('gemini-1.5-pro-002'),
+        'google-gemini-1.5-flash': google('gemini-1.5-flash-002'),
+      },
     });
