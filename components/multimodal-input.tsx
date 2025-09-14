@@ -28,7 +28,8 @@ import {
   PromptInputModelSelect,
   PromptInputModelSelectContent,
 } from './elements/prompt-input';
-import { SelectItem, } from '@/components/ui/select';
+import { SelectItem } from '@/components/ui/select';
+import * as SelectPrimitive from '@radix-ui/react-select';
 import equal from 'fast-deep-equal';
 import type { UseChatHelpers } from '@ai-sdk/react';
 import { AnimatePresence, motion } from 'framer-motion';
