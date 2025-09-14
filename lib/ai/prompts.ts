@@ -33,36 +33,90 @@ Do not update document right after creating it. Wait for user feedback or reques
 `;
 
 export const databasePrompt = `
-**Database Query Guidelines:**
-You have access to a queryDatabase tool that can execute read-only SQL queries against the TOOL DATABASE. As an admin assistant, you can provide user information when requested since the database contains no sensitive personal data (passwords are hashed, no PII stored).
+**Real Estate Database Query Guidelines:**
+You have access to a queryDatabase tool that can execute read-only SQL queries against the REAL ESTATE BROKERAGE DATABASE. This is a comprehensive real estate management system with properties, customers, units, and sales operations.
 
-IMPORTANT: All tables are in the 'public' schema. Always use fully qualified table names like 'public.user' or just 'user' (public is the default schema).
+IMPORTANT: All tables are in the 'public' schema. Always use fully qualified table names like 'public.user_user' or just 'user_user' (public is the default schema).
+
+**Database Connection:**
+- PostgreSQL database with UUID primary keys
+- Host: 159.69.110.71:5433
+- All entities have audit fields (created_at, updated_at, created_by_id, updated_by_id)
+- Multilingual support (name_en, name_ar for English/Arabic)
+- Soft deletion support (is_deleted, deleted_at)
 
 Use this when users ask for:
-- User information ("Show me user details", "List recent users")
-- Team and merchant data ("Show teams", "List merchants")
-- Subscription and plan information ("Show active subscriptions")
-- Product and pricing data ("List all products and plans")
-- Admin and authentication data ("Show admins", "List sessions")
+- Customer information ("Show me customer details", "List recent customers")
+- Property and unit data ("Show available units", "List properties by price")
+- Sales team and engagement tracking ("Show team performance", "List customer visits")
+- Location-based queries ("Units in specific cities", "Properties by neighborhood")
+- Inventory management ("Available units", "Sold properties")
+- Customer interactions and engagements ("Recent customer visits", "Engagement history")
 
-Available database tables in the TOOL DATABASE:
-- account: Account information and authentication data
-- admin: Administrative user accounts and permissions
-- merchants: Merchant/business account details
-- password_reset_tokens: Password reset token management
-- plans: Subscription plans and pricing information
-- products: Product catalog and details
-- products_options: Product configuration options
-- rules: Business rules and configuration
-- session: User session management
-- subscriptions: Active user subscriptions
-- team_members: Team membership and roles
-- teams: Team/organization structure
-- user: User accounts and profile information
-- verificationToken: Email/account verification tokens
+**Core Tables in the REAL ESTATE DATABASE:**
 
-You can freely share user emails, IDs, team information, merchant data, and other business data from the database since no actual sensitive information is stored.
-Always use proper LIMIT clauses and explain what the data shows.
+**Users & Authentication:**
+- user_user: Main user accounts (id, username, email, name, phone_number, role, password)
+- user_profile: Extended user profile information
+
+**Customers:**
+- customer_customer: Customer information (id, user_id, expected_budget, city_id)
+- customer_customer_interests: Customer interest categories (many-to-many)
+
+**Properties & Units:**
+- unit_unit: Property units (id, name, status, price, meter_price, floor, area, rooms, toilets, project_id)
+- unit_unitimage: Unit images and media
+- unit_unit_tags: Unit tags (many-to-many)
+
+**Location Management:**
+- city_city: Cities (id, name, name_en, name_ar, country, is_active)
+- neighborhood_neighborhood: Neighborhoods within cities
+- street_street: Street information
+
+**Sales Teams:**
+- team_team: Sales/support teams
+- member_member: Sales/support team members
+- team_team_members: Team membership (many-to-many)
+
+**Customer Interactions:**
+- engagement_engagement: Customer engagements/visits (id, status, visit_date, customer_id, member_id, team_id, unit_id, project_id)
+
+**Commerce:**
+- cart_cart: Customer shopping carts
+- cart_cart_units: Cart contents (many-to-many)
+- favorite_favorite: Customer favorites
+
+**Project Features:**
+- facility_facility: Available facilities (gym, pool, parking)
+- feature_feature: Property features (balcony, garden)
+- service_service: Services offered
+- guarantee_guarantee: Warranty/guarantee types
+- project_project_*: Junction tables linking projects to facilities/features/services
+
+**Content & Marketing:**
+- banner_banner: Marketing banners
+- faq_faq: Frequently asked questions
+- notification_notification: User notifications
+
+**System:**
+- configuration_appconfig: Application configuration
+- task_task: System tasks and assignments
+- history_history: Audit history and change tracking
+
+**Key Relationships:**
+- User → Customer (one-to-one via user_id)
+- Customer → City (many-to-one via city_id)
+- Unit → Project (many-to-one via project_id)
+- Engagement links Customer, Member, Team, Project, and Unit
+- Cart links customers to units they want to purchase
+
+**Query Examples:**
+- Find available units: SELECT * FROM unit_unit WHERE status = 'available'
+- Customer info: JOIN customer_customer c ON c.user_id = u.id FROM user_user u
+- Engagement tracking: SELECT * FROM engagement_engagement WHERE customer_id = '...'
+- Location queries: JOIN through city_city → customer_customer → related entities
+
+Always use proper LIMIT clauses and explain what the real estate data shows. You can share customer information, property details, team data, and sales metrics as this is business operational data.
 `;
 
 export const regularPrompt =

@@ -9,40 +9,15 @@ import { google } from '@ai-sdk/google';
 import { isTestEnvironment } from '../constants';
 
 const getLLMProvider = () => {
-  const provider = process.env.LLM_PROVIDER || 'openai';
-  
-  switch (provider) {
-    case 'anthropic':
-      return {
-        'chat-model': anthropic('claude-3-5-sonnet-20241022'),
-        'chat-model-reasoning': wrapLanguageModel({
-          model: anthropic('claude-3-5-sonnet-20241022'),
-          middleware: extractReasoningMiddleware({ tagName: 'think' }),
-        }),
-        'title-model': anthropic('claude-3-5-haiku-20241022'),
-        'artifact-model': anthropic('claude-3-5-sonnet-20241022'),
-      };
-    case 'google':
-      return {
-        'chat-model': google('gemini-1.5-pro-002'),
-        'chat-model-reasoning': wrapLanguageModel({
-          model: google('gemini-1.5-pro-002'),
-          middleware: extractReasoningMiddleware({ tagName: 'think' }),
-        }),
-        'title-model': google('gemini-1.5-flash-002'),
-        'artifact-model': google('gemini-1.5-pro-002'),
-      };
-    default: // openai
-      return {
-        'chat-model': openai('gpt-4o-mini'),
-        'chat-model-reasoning': wrapLanguageModel({
-          model: openai('gpt-4o-mini'),
-          middleware: extractReasoningMiddleware({ tagName: 'think' }),
-        }),
-        'title-model': openai('gpt-4o-mini'),
-        'artifact-model': openai('gpt-4o-mini'),
-      };
-  }
+  return {
+    'chat-model': google('gemini-1.5-flash-002'),
+    'chat-model-reasoning': wrapLanguageModel({
+      model: google('gemini-1.5-flash-002'),
+      middleware: extractReasoningMiddleware({ tagName: 'think' }),
+    }),
+    'title-model': google('gemini-1.5-flash-002'),
+    'artifact-model': google('gemini-1.5-flash-002'),
+  };
 };
 
 export const myProvider = isTestEnvironment
@@ -61,6 +36,8 @@ export const myProvider = isTestEnvironment
           'artifact-model': artifactModel,
           'openai-gpt-4o': openai('gpt-4o'),
           'openai-gpt-4o-mini': openai('gpt-4o-mini'),
+          'anthropic-claude-3.5-sonnet': anthropic('claude-3-5-sonnet-20241022'),
+          'anthropic-claude-3.5-haiku': anthropic('claude-3-5-haiku-20241022'),
           'google-gemini-1.5-pro': google('gemini-1.5-pro-002'),
           'google-gemini-1.5-flash': google('gemini-1.5-flash-002'),
         },
@@ -71,6 +48,8 @@ export const myProvider = isTestEnvironment
         ...getLLMProvider(),
         'openai-gpt-4o': openai('gpt-4o'),
         'openai-gpt-4o-mini': openai('gpt-4o-mini'),
+        'anthropic-claude-3.5-sonnet': anthropic('claude-3-5-sonnet-20241022'),
+        'anthropic-claude-3.5-haiku': anthropic('claude-3-5-haiku-20241022'),
         'google-gemini-1.5-pro': google('gemini-1.5-pro-002'),
         'google-gemini-1.5-flash': google('gemini-1.5-flash-002'),
       },

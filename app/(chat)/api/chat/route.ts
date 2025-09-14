@@ -222,8 +222,32 @@ export async function POST(request: Request) {
           }
         }
       },
-      onError: () => {
-        return 'Oops, an error occurred!';
+      onError: (error) => {
+        console.error('Stream error:', error);
+        
+        const errorMessage = error?.message || '';
+        
+        // OpenAI rate limit
+        if (errorMessage.includes('Rate limit reached')) {
+          return '⚠️ OpenAI rate limit exceeded. Please try switching to Google Gemini or Claude models from the model selector.';
+        }
+        
+        // Anthropic credit balance
+        if (errorMessage.includes('credit balance is too low')) {
+          return '💳 Anthropic credits exhausted. Please add credits at console.anthropic.com or switch to Google Gemini models.';
+        }
+        
+        // Anthropic auth errors
+        if (errorMessage.includes('authentication_error') || errorMessage.includes('invalid x-api-key')) {
+          return '🔑 Anthropic API key invalid. Please switch to Google Gemini models that are working properly.';
+        }
+        
+        // Google API errors
+        if (errorMessage.includes('API_KEY_INVALID')) {
+          return '🔑 Google API key invalid. Please check your configuration.';
+        }
+        
+        return '❌ An error occurred with this model. Please try switching to Google Gemini models which are working reliably.';
       },
     });
 
@@ -243,17 +267,62 @@ export async function POST(request: Request) {
       return error.toResponse();
     }
 
-    // Check for Vercel AI Gateway credit card error
-    if (
-      error instanceof Error &&
-      error.message?.includes(
-        'AI Gateway requires a valid credit card on file to service requests',
-      )
-    ) {
-      return new ChatSDKError('bad_request:activate_gateway').toResponse();
+    console.error('Unhandled error in chat API:', error);
+
+    // Check for specific API errors and provide helpful messages
+    if (error instanceof Error) {
+      const errorMessage = error.message || '';
+      
+      // OpenAI rate limit errors
+      if (errorMessage.includes('Rate limit reached')) {
+        return Response.json(
+          { 
+            code: 'rate_limit:chat', 
+            message: 'OpenAI rate limit exceeded. Please try again in a few minutes or switch to a different model (Google Gemini or Claude).' 
+          },
+          { status: 429 }
+        );
+      }
+      
+      // Anthropic credit balance errors
+      if (errorMessage.includes('credit balance is too low')) {
+        return Response.json(
+          { 
+            code: 'payment_required:chat', 
+            message: 'Anthropic API credits exhausted. Please add credits at console.anthropic.com or switch to Google Gemini models.' 
+          },
+          { status: 402 }
+        );
+      }
+      
+      // Anthropic authentication errors
+      if (errorMessage.includes('authentication_error') || errorMessage.includes('invalid x-api-key')) {
+        return Response.json(
+          { 
+            code: 'unauthorized:chat', 
+            message: 'Anthropic API key is invalid. Please check your API key or switch to Google Gemini models.' 
+          },
+          { status: 401 }
+        );
+      }
+      
+      // Google API errors
+      if (errorMessage.includes('API_KEY_INVALID')) {
+        return Response.json(
+          { 
+            code: 'unauthorized:chat', 
+            message: 'Google API key is invalid. Please check your API key configuration.' 
+          },
+          { status: 401 }
+        );
+      }
+      
+      // Vercel AI Gateway credit card error
+      if (errorMessage.includes('AI Gateway requires a valid credit card on file to service requests')) {
+        return new ChatSDKError('bad_request:activate_gateway').toResponse();
+      }
     }
 
-    console.error('Unhandled error in chat API:', error);
     return new ChatSDKError('offline:chat').toResponse();
   }
 }
