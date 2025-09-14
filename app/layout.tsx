@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 
 import './globals.css';
 import { SessionProvider } from 'next-auth/react';
+import { LanguageProvider } from '@/components/language-provider';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://chat.vercel.ai'),
@@ -48,6 +49,18 @@ const THEME_COLOR_SCRIPT = `\
   updateThemeColor();
 })();`;
 
+const LANGUAGE_SCRIPT = `\
+(function() {
+  try {
+    var saved = localStorage.getItem('app:language') || 'en';
+    var html = document.documentElement;
+    html.setAttribute('lang', saved);
+    html.setAttribute('dir', saved === 'ar' ? 'rtl' : 'ltr');
+  } catch (e) {
+    // no-op
+  }
+})();`;
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -69,6 +82,11 @@ export default async function RootLayout({
             __html: THEME_COLOR_SCRIPT,
           }}
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: LANGUAGE_SCRIPT,
+          }}
+        />
       </head>
       <body className="antialiased">
         <ThemeProvider
@@ -78,7 +96,9 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <Toaster position="top-center" />
-          <SessionProvider>{children}</SessionProvider>
+          <SessionProvider>
+            <LanguageProvider>{children}</LanguageProvider>
+          </SessionProvider>
         </ThemeProvider>
       </body>
     </html>

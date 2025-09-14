@@ -22,11 +22,13 @@ import { useRouter } from 'next/navigation';
 import { toast } from './toast';
 import { LoaderIcon } from './icons';
 import { guestRegex } from '@/lib/constants';
+import { useLanguage } from '@/components/language-provider';
 
 export function SidebarUserNav({ user }: { user: User }) {
   const router = useRouter();
   const { data, status } = useSession();
   const { setTheme, resolvedTheme } = useTheme();
+  const { language, toggleLanguage } = useLanguage();
 
   const isGuest = guestRegex.test(data?.user?.email ?? '');
 
@@ -79,6 +81,13 @@ export function SidebarUserNav({ user }: { user: User }) {
               }
             >
               {`Toggle ${resolvedTheme === 'light' ? 'dark' : 'light'} mode`}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              data-testid="user-nav-item-language"
+              className="cursor-pointer"
+              onSelect={() => toggleLanguage()}
+            >
+              {`Switch to ${language === 'ar' ? 'English' : 'Arabic'} (${language === 'ar' ? 'EN' : 'AR'})`}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild data-testid="user-nav-item-auth">
