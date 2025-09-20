@@ -353,7 +353,7 @@ function PureMultimodalInput({
           <PromptInputTextarea
             data-testid="multimodal-input"
             ref={textareaRef}
-            placeholder={t('messages.placeholder')}
+            placeholder={t('chat.placeholder')}
             value={input}
             onChange={handleInput}
             minHeight={44}
