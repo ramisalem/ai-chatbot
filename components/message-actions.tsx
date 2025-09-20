@@ -9,6 +9,7 @@ import { memo } from 'react';
 import equal from 'fast-deep-equal';
 import { toast } from 'sonner';
 import type { ChatMessage } from '@/lib/types';
+import { useTranslations } from '@/lib/translations';
 
 export function PureMessageActions({
   chatId,
@@ -25,6 +26,7 @@ export function PureMessageActions({
 }) {
   const { mutate } = useSWRConfig();
   const [_, copyToClipboard] = useCopyToClipboard();
+  const { t } = useTranslations();
 
   if (isLoading) return null;
 
@@ -36,12 +38,12 @@ export function PureMessageActions({
 
   const handleCopy = async () => {
     if (!textFromParts) {
-      toast.error("There's no text to copy!");
+      toast.error(t('messages.noTextToCopy'));
       return;
     }
 
     await copyToClipboard(textFromParts);
-    toast.success('Copied to clipboard!');
+    toast.success(t('messages.copiedToClipboard'));
   };
 
   // User messages get edit (on hover) and copy actions
@@ -51,14 +53,14 @@ export function PureMessageActions({
         <div className="relative">
           {setMode && (
             <Action
-              tooltip="Edit"
+              tooltip={t('actions.edit')}
               onClick={() => setMode('edit')}
               className="-left-10 absolute top-0 opacity-0 transition-opacity group-hover/message:opacity-100"
             >
               <PencilEditIcon />
             </Action>
           )}
-          <Action tooltip="Copy" onClick={handleCopy}>
+          <Action tooltip={t('actions.copy')} onClick={handleCopy}>
             <CopyIcon />
           </Action>
         </div>
@@ -68,12 +70,12 @@ export function PureMessageActions({
 
   return (
     <Actions className="-ml-0.5">
-      <Action tooltip="Copy" onClick={handleCopy}>
+      <Action tooltip={t('actions.copy')} onClick={handleCopy}>
         <CopyIcon />
       </Action>
 
       <Action
-        tooltip="Upvote Response"
+        tooltip={t('actions.upvote')}
         data-testid="message-upvote"
         disabled={vote?.isUpvoted}
         onClick={async () => {
@@ -87,7 +89,7 @@ export function PureMessageActions({
           });
 
           toast.promise(upvote, {
-            loading: 'Upvoting Response...',
+            loading: t('messages.upvotingResponse'),
             success: () => {
               mutate<Array<Vote>>(
                 `/api/vote?chatId=${chatId}`,
@@ -110,9 +112,9 @@ export function PureMessageActions({
                 { revalidate: false },
               );
 
-              return 'Upvoted Response!';
+              return t('messages.upvotedResponse');
             },
-            error: 'Failed to upvote response.',
+            error: t('messages.failedToUpvote'),
           });
         }}
       >
@@ -120,7 +122,7 @@ export function PureMessageActions({
       </Action>
 
       <Action
-        tooltip="Downvote Response"
+        tooltip={t('actions.downvote')}
         data-testid="message-downvote"
         disabled={vote && !vote.isUpvoted}
         onClick={async () => {
@@ -134,7 +136,7 @@ export function PureMessageActions({
           });
 
           toast.promise(downvote, {
-            loading: 'Downvoting Response...',
+            loading: t('messages.downvotingResponse'),
             success: () => {
               mutate<Array<Vote>>(
                 `/api/vote?chatId=${chatId}`,
@@ -157,9 +159,9 @@ export function PureMessageActions({
                 { revalidate: false },
               );
 
-              return 'Downvoted Response!';
+              return t('messages.downvotedResponse');
             },
-            error: 'Failed to downvote response.',
+            error: t('messages.failedToDownvote'),
           });
         }}
       >

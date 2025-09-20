@@ -1,0 +1,121 @@
+{
+  "nav": {
+    "newChat": "محادثة جديدة",
+    "betaVersion": "نسخة تجريبية",
+    "chatbot": "المساعد الذكي"
+  },
+  "language": {
+    "arabic": "العربية",
+    "english": "English",
+    "direction": "rtl"
+  },
+  "auth": {
+
+    "signIn": "تسجيل الدخول",
+    "signUp": "إنشاء حساب",
+    "signOut": "تسجيل الخروج",
+    "email": "البريد الإلكتروني",
+    "emailAddress": "عنوان البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "emailPlaceholder": "user@example.com",
+    "signInDescription": "استخدم بريدك الإلكتروني وكلمة المرور لتسجيل الدخول",
+    "signUpDescription": "أنشئ حساباً باستخدام بريدك الإلكتروني وكلمة المرور",
+    "noAccount": "ليس لديك حساب؟",
+    "hasAccount": "هل لديك حساب بالفعل؟",
+    "signUpFree": "سجل مجاناً",
+    "signInInstead": "سجل الدخول بدلاً من ذلك",
+    "invalidCredentials": "بيانات الاعتماد غير صحيحة!",
+    "validationFailed": "فشل التحقق من البيانات المرسلة!",
+    "accountExists": "الحساب موجود بالفعل!",
+    "createAccountFailed": "فشل في إنشاء الحساب!",
+    "accountCreatedSuccess": "تم إنشاء الحساب بنجاح!"
+  },
+  "sidebar": {
+    "loginPrompt": "سجل الدخول لحفظ ومراجعة المحادثات السابقة!",
+    "conversationsPrompt": "ستظهر محادثاتك هنا بمجرد البدء في المحادثة!",
+    "today": "اليوم",
+    "yesterday": "أمس",
+    "lastWeek": "آخر 7 أيام",
+    "lastMonth": "آخر 30 يوماً",
+    "older": "أقدم من الشهر الماضي",
+    "endOfHistory": "لقد وصلت إلى نهاية تاريخ المحادثات.",
+    "loadingChats": "جاري تحميل المحادثات..."
+  },
+  "actions": {
+    "edit": "تعديل",
+    "copy": "نسخ",
+    "upvote": "تقييم إيجابي",
+    "downvote": "تقييم سلبي",
+    "delete": "حذف",
+    "cancel": "إلغاء",
+    "continue": "متابعة",
+    "save": "حفظ"
+  },
+  "messages": {
+    "helloThere": "مرحبا بك!",
+    "howCanIHelpYou": "كيف يمكنني مساعدتك اليوم؟",
+    "noTextToCopy": "لا يوجد نص للنسخ!",
+    "copiedToClipboard": "تم النسخ إلى الحافظة!",
+    "upvotingResponse": "جاري التقييم الإيجابي...",
+    "upvotedResponse": "تم التقييم الإيجابي!",
+    "downvotingResponse": "جاري التقييم السلبي...",
+    "downvotedResponse": "تم التقييم السلبي!",
+    "failedToUpvote": "فشل في التقييم الإيجابي.",
+    "failedToDownvote": "فشل في التقييم السلبي.",
+    "scrollToBottom": "التمرير إلى الأسفل"
+  },
+  "dialog": {
+    "deleteConfirmTitle": "هل أنت متأكد تماماً؟",
+    "deleteConfirmDescription": "لا يمكن التراجع عن هذا الإجراء. سيؤدي هذا إلى حذف محادثتك نهائياً وإزالتها من خوادمنا.",
+    "deletingChat": "جاري حذف المحادثة...",
+    "chatDeletedSuccess": "تم حذف المحادثة بنجاح",
+    "failedToDeleteChat": "فشل في حذف المحادثة"
+  },
+  "tooltips": {
+    "toggleSidebar": "تبديل الشريط الجانبي",
+    "newChat": "محادثة جديدة",
+    "preview": "معاينة",
+    "previous": "السابق",
+    "next": "التالي"
+  },
+  "context": {
+    "cacheHits": "إصابات التخزين المؤقت",
+    "cacheWrites": "كتابات التخزين المؤقت",
+    "input": "المدخل",
+    "output": "المخرج",
+    "reasoning": "التفكير"
+  },
+  "chat": {
+    "placeholder": "اكتب رسالتك هنا...",
+    "typing": "يكتب...",
+    "sendMessage": "إرسال رسالة",
+    "newMessage": "رسالة جديدة",
+    "stopGenerating": "إيقاف التوليد",
+    "regenerate": "إعادة توليد",
+    "share": "مشاركة",
+    "private": "خاص",
+    "public": "عام"
+  },
+  "form": {
+    "send": "إرسال",
+    "submit": "إرسال النموذج",
+    "loading": "جاري التحميل"
+  },
+  "common": {
+    "close": "إغلاق",
+    "open": "فتح",
+    "expand": "توسيع",
+    "collapse": "طي",
+    "search": "بحث",
+    "filter": "تصفية",
+    "sort": "ترتيب",
+    "export": "تصدير",
+    "import": "استيراد"
+  },
+  "errors": {
+    "generic": "حدث خطأ غير متوقع",
+    "network": "خطأ في الشبكة",
+    "unauthorized": "غير مصرح",
+    "notFound": "غير موجود"
+  }
+}

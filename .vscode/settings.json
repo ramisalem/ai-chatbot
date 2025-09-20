@@ -14,5 +14,9 @@
     { "pattern": "app/*" },
     { "pattern": "packages/*" }
   ],
-  "jira-plugin.workingProject": ""
+  "jira-plugin.workingProject": "",
+  "i18n-ally.localesPaths": [
+    "i18n",
+    "messages"
+  ]
 }

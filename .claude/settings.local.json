@@ -6,7 +6,12 @@
       "Bash(pnpm db:migrate:*)",
       "Bash(gh auth:*)",
       "Bash(gh extension install:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(pnpm dev:*)",
+      "mcp__puppeteer__puppeteer_navigate",
+      "Bash(curl:*)",
+      "mcp__puppeteer__puppeteer_screenshot",
+      "Bash(pnpm build:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,6 +1,9 @@
+import { useTranslations } from '@/lib/translations';
 import { motion } from 'framer-motion';
 
 export const Greeting = () => {
+  const { t } = useTranslations();
+
   return (
     <div
       key="overview"
@@ -13,7 +16,7 @@ export const Greeting = () => {
         transition={{ delay: 0.5 }}
         className="font-semibold text-xl md:text-2xl"
       >
-        Hello there!
+        {t('messages.helloThere')}
       </motion.div>
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -22,7 +25,7 @@ export const Greeting = () => {
         transition={{ delay: 0.6 }}
         className="text-xl text-zinc-500 md:text-2xl"
       >
-        How can I help you today?
+        {t('messages.howCanIHelpYou')}
       </motion.div>
     </div>
   );
