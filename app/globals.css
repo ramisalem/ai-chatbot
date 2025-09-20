@@ -294,3 +294,64 @@
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
 }
+
+/* RTL support */
+@layer utilities {
+  .rtl {
+    direction: rtl;
+  }
+
+  .ltr {
+    direction: ltr;
+  }
+
+  /* RTL-specific margin and padding utilities */
+  .rtl .ml-auto {
+    margin-left: auto;
+    margin-right: 0;
+  }
+
+  .rtl .mr-auto {
+    margin-right: auto;
+    margin-left: 0;
+  }
+
+  .rtl .text-left {
+    text-align: right;
+  }
+
+  .rtl .text-right {
+    text-align: left;
+  }
+
+  /* RTL-specific positioning */
+  .rtl .left-0 {
+    right: 0;
+    left: auto;
+  }
+
+  .rtl .right-0 {
+    left: 0;
+    right: auto;
+  }
+
+  /* RTL-specific flex utilities */
+  .rtl .flex-row {
+    flex-direction: row-reverse;
+  }
+
+  /* RTL-specific border radius */
+  .rtl .rounded-l-sm {
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+    border-bottom-right-radius: 0.125rem;
+    border-top-right-radius: 0.125rem;
+  }
+
+  .rtl .rounded-r-sm {
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 0.125rem;
+    border-top-left-radius: 0.125rem;
+  }
+}

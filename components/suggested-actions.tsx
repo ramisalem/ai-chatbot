@@ -19,10 +19,10 @@ function PureSuggestedActions({
   selectedVisibilityType,
 }: SuggestedActionsProps) {
   const suggestedActions = [
-    'What are the advantages of using Next.js?',
-    "Write code to demonstrate Dijkstra's algorithm",
-    'Help me write an essay about Silicon Valley',
-    'What is the weather in San Francisco?',
+    'اعرض لي أسماء المشاريع الأكثر زيارة',
+    'ما هي أحدث الاتجاهات في السوق؟',
+    'ساعدني في إنشاء تقرير مبيعات شهري',
+    'اقترح استراتيجيات لزيادة المبيعات',
   ];
 
   return (

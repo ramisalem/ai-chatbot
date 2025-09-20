@@ -1,0 +1,120 @@
+{
+  "nav": {
+    "newChat": "New Chat",
+    "betaVersion": "Beta Version",
+    "chatbot": "Chatbot"
+  },
+  "language": {
+    "arabic": "العربية",
+    "english": "English",
+    "direction": "ltr"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "email": "Email",
+    "emailAddress": "Email Address",
+    "password": "Password",
+    "emailPlaceholder": "user@example.com",
+    "signInDescription": "Use your email and password to sign in",
+    "signUpDescription": "Create an account with your email and password",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "signUpFree": " for free.",
+    "signInInstead": " instead.",
+    "invalidCredentials": "Invalid credentials!",
+    "validationFailed": "Failed validating your submission!",
+    "accountExists": "Account already exists!",
+    "createAccountFailed": "Failed to create account!",
+    "accountCreatedSuccess": "Account created successfully!"
+  },
+  "sidebar": {
+    "loginPrompt": "Login to save and revisit previous chats!",
+    "conversationsPrompt": "Your conversations will appear here once you start chatting!",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "lastWeek": "Last 7 days",
+    "lastMonth": "Last 30 days",
+    "older": "Older than last month",
+    "endOfHistory": "You have reached the end of your chat history.",
+    "loadingChats": "Loading Chats..."
+  },
+  "actions": {
+    "edit": "Edit",
+    "copy": "Copy",
+    "upvote": "Upvote Response",
+    "downvote": "Downvote Response",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "continue": "Continue",
+    "save": "Save"
+  },
+  "messages": {
+    "helloThere": "Hello there!",
+    "howCanIHelpYou": "How can I help you today?",
+    "noTextToCopy": "There's no text to copy!",
+    "copiedToClipboard": "Copied to clipboard!",
+    "upvotingResponse": "Upvoting Response...",
+    "upvotedResponse": "Upvoted Response!",
+    "downvotingResponse": "Downvoting Response...",
+    "downvotedResponse": "Downvoted Response!",
+    "failedToUpvote": "Failed to upvote response.",
+    "failedToDownvote": "Failed to downvote response.",
+    "scrollToBottom": "Scroll to bottom"
+  },
+  "dialog": {
+    "deleteConfirmTitle": "Are you absolutely sure?",
+    "deleteConfirmDescription": "This action cannot be undone. This will permanently delete your chat and remove it from our servers.",
+    "deletingChat": "Deleting chat...",
+    "chatDeletedSuccess": "Chat deleted successfully",
+    "failedToDeleteChat": "Failed to delete chat"
+  },
+  "tooltips": {
+    "toggleSidebar": "Toggle Sidebar",
+    "newChat": "New Chat",
+    "preview": "Preview",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "context": {
+    "cacheHits": "Cache Hits",
+    "cacheWrites": "Cache Writes",
+    "input": "Input",
+    "output": "Output",
+    "reasoning": "Reasoning"
+  },
+  "chat": {
+    "placeholder": "Type your message here...",
+    "typing": "Typing...",
+    "sendMessage": "Send message",
+    "newMessage": "New message",
+    "stopGenerating": "Stop generating",
+    "regenerate": "Regenerate",
+    "share": "Share",
+    "private": "Private",
+    "public": "Public"
+  },
+  "form": {
+    "send": "Send",
+    "submit": "Submit form",
+    "loading": "Loading"
+  },
+  "common": {
+    "close": "Close",
+    "open": "Open",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "export": "Export",
+    "import": "Import"
+  },
+  "errors": {
+    "generic": "An unexpected error occurred",
+    "network": "Network error",
+    "unauthorized": "Unauthorized",
+    "notFound": "Not found"
+  }
+}

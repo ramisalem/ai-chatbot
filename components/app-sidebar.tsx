@@ -17,10 +17,12 @@ import {
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+import { useTranslations } from '@/lib/translations';
 
 export function AppSidebar({ user }: { user: User | undefined }) {
   const router = useRouter();
   const { setOpenMobile } = useSidebar();
+  const { t } = useTranslations();
 
   return (
     <Sidebar className="group-data-[side=left]:border-r-0">
@@ -35,7 +37,7 @@ export function AppSidebar({ user }: { user: User | undefined }) {
               className="flex flex-row items-center gap-3"
             >
               <span className="cursor-pointer rounded-md px-2 font-semibold text-lg hover:bg-muted">
-                Chatbot
+                {t('nav.chatbot')}
               </span>
             </Link>
             <Tooltip>
@@ -54,7 +56,7 @@ export function AppSidebar({ user }: { user: User | undefined }) {
                 </Button>
               </TooltipTrigger>
               <TooltipContent align="end" className="hidden md:block">
-                New Chat
+                {t('tooltips.newChat')}
               </TooltipContent>
             </Tooltip>
           </div>

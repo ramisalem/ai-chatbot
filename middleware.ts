@@ -1,6 +1,9 @@
-import { NextResponse, type NextRequest } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
-import { guestRegex, isDevelopmentEnvironment } from './lib/constants';
+import { isDevelopmentEnvironment } from './lib/constants';
+
+const locales = ['ar', 'en'];
+const defaultLocale = 'ar';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -13,9 +16,45 @@ export async function middleware(request: NextRequest) {
     return new Response('pong', { status: 200 });
   }
 
-  if (pathname.startsWith('/api/auth')) {
+  // Handle API routes without i18n - completely skip auth middleware for auth APIs
+  if (pathname.startsWith('/api')) {
     return NextResponse.next();
   }
+
+  // Simple locale routing
+  if (pathname === '/') {
+    return NextResponse.redirect(new URL(`/${defaultLocale}`, request.url));
+  }
+
+  // Check if the pathname already has a locale
+  const pathnameHasLocale = locales.some(
+    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
+  );
+
+  if (!pathnameHasLocale) {
+    return NextResponse.redirect(new URL(`/${defaultLocale}${pathname}`, request.url));
+  }
+
+  // Run auth middleware for protected routes
+  const localeMatch = pathname.match(/^\/([a-z]{2})(\/|$)/);
+  const cleanPathname = localeMatch ? pathname.replace(/^\/[a-z]{2}/, '') || '/' : pathname;
+  
+  // Skip auth for login and register pages
+  if (['/login', '/register'].includes(cleanPathname)) {
+    return NextResponse.next();
+  }
+
+  // Run auth middleware for all other routes
+  return runAuthMiddleware(request);
+}
+
+async function runAuthMiddleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Check if we're in a locale-prefixed route
+  const localeMatch = pathname.match(/^\/([a-z]{2})(\/|$)/);
+  const locale = localeMatch ? localeMatch[1] : defaultLocale;
+  const cleanPathname = localeMatch ? pathname.replace(/^\/[a-z]{2}/, '') || '/' : pathname;
 
   const token = await getToken({
     req: request,
@@ -24,17 +63,11 @@ export async function middleware(request: NextRequest) {
   });
 
   if (!token) {
-    const redirectUrl = encodeURIComponent(request.url);
-
-    return NextResponse.redirect(
-      new URL(`/api/auth/guest?redirectUrl=${redirectUrl}`, request.url),
-    );
+    return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
   }
 
-  const isGuest = guestRegex.test(token?.email ?? '');
-
-  if (token && !isGuest && ['/login', '/register'].includes(pathname)) {
-    return NextResponse.redirect(new URL('/', request.url));
+  if (token && ['/login', '/register'].includes(cleanPathname)) {
+    return NextResponse.redirect(new URL(`/${locale}/`, request.url));
   }
 
   return NextResponse.next();
@@ -42,18 +75,13 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/',
-    '/chat/:id',
-    '/api/:path*',
-    '/login',
-    '/register',
-
     /*
      * Match all request paths except for the ones starting with:
+     * - api (API routes)
      * - _next/static (static files)
      * - _next/image (image optimization files)
-     * - favicon.ico, sitemap.xml, robots.txt (metadata files)
+     * - favicon.ico (favicon file)
      */
-    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 };
