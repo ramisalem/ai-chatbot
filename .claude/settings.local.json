@@ -11,7 +11,9 @@
       "mcp__puppeteer__puppeteer_navigate",
       "Bash(curl:*)",
       "mcp__puppeteer__puppeteer_screenshot",
-      "Bash(pnpm build:*)"
+      "Bash(pnpm build:*)",
+      "mcp__puppeteer__puppeteer_fill",
+      "mcp__puppeteer__puppeteer_click"
     ],
     "deny": [],
     "ask": []
